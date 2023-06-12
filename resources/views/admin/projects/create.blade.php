@@ -44,6 +44,14 @@
                 <label for="description">Body</label>
                 <textarea name="description" id="description" rows="10" class="form-control"></textarea>
             </div>
+            <div class="form-group">
+                <p>Selezioniamo i Tag</p>
+                @foreach ($tags as $tag)
+                    <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="form-check-input"
+                        {{ in_array($tag->id, old('tags', [])) ? 'checked' : '' }}>
+                    <label for="" class="form-check-label">{{ $tag->title }}</label>
+                @endforeach
+            </div>
             <button type="submit" class="btn btn-success">Crea</button>
             <button type="reset" class="btn btn-primary">Reset</button>
         </form>

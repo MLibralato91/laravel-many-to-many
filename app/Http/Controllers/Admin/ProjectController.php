@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Type;
+use App\Models\Tag;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use Illuminate\Support\Str;
@@ -32,7 +33,8 @@ class ProjectController extends Controller
     public function create()
     {
         $types = Type::all();
-        return view('admin.projects.create', compact('types'));
+        $tags = Tag::all();
+        return view('admin.projects.create', compact('types', 'tags'));
     }
 
     /**
@@ -52,6 +54,9 @@ class ProjectController extends Controller
         }
 
         $project = Project::create($data);
+        if ($request->has('tags')) {
+            $project->tags()->attach($request->tags);
+        }
         return redirect()->route('admin.projects.show', $project->slug);
     }
 
@@ -75,7 +80,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view('admin.projects.edit', compact('project', 'types'));
+        $tags = Tag::all();
+        return view('admin.projects.edit', compact('project', 'types', 'tags'));
     }
 
     /**
@@ -98,6 +104,11 @@ class ProjectController extends Controller
             $data['image'] = asset('storage/' . $image_path);
         }
         $project->update($data);
+        if ($request->has('tags')) {
+            $project->tags()->sync($request->tags);
+        } else {
+            $project->tags()->sync([]);
+        }
         return redirect()->route('admin.projects.show', $project->slug)->with('message', 'Il post è stato aggiornato');
     }
 
